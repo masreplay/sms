@@ -1,21 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:sms/cart_model.dart';
 
 import 'drop_down.dart';
+import 'product_model.dart';
 
-class AddInvoiceScreen extends StatelessWidget {
+class AddInvoiceScreen extends HookConsumerWidget {
   const AddInvoiceScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cart = ref.watch(getCartProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('فاتورة بيع: فوائد الودائع الثابتة'),
       ),
-      body: const Padding(
-        padding: EdgeInsets.all(8.0),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            AppDropdownButtonFormField(),
+            DropdownFormField(
+              items: products,
+              itemTextBuilder: (product) => product.name,
+              onChanged: (product) {
+                ref.read(getCartProvider.notifier).add(product);
+              },
+            ),
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 8.0,
+                ),
+                itemCount: cart.items.length,
+                itemBuilder: (context, index) {
+                  final item = cart.items[index];
+                  return CartListTile(item: item);
+                },
+              ),
+            ),
           ],
         ),
       ),
@@ -23,25 +46,58 @@ class AddInvoiceScreen extends StatelessWidget {
   }
 }
 
-final products = [
-  const Product(name: "تست"),
-  const Product(name: "Hat"),
-  const Product(name: "Blue shirt"),
-  const Product(name: "Package quantity test"),
-  const Product(name: "test2"),
-  const Product(name: "test5"),
-  const Product(
-    name:
-        "asdadadsa asdad a d asd a sdawdawd aLorem ipsum dolor sit amet, consectetur adipiscing elit. Done quis sapien mi. Phasellus sed ante molestie, maximus lacus at, sagittis metus e molestie, maximus lacus at, sagittis metus",
-  ),
-];
-
-class Product {
-  final String name;
-  final double? price;
-
-  const Product({
-    required this.name,
-    this.price,
+class CartListTile extends StatelessWidget {
+  const CartListTile({
+    super.key,
+    required this.item,
   });
+
+  final CartItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12.0),
+        color: const Color(0xff303142),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(item.product.name),
+          ),
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 20.0),
+            decoration: BoxDecoration(
+              border: Border.all(color: const Color(0xff828791)),
+              borderRadius: BorderRadius.circular(12.0),
+            ),
+            child: const Icon(
+              Icons.remove,
+              color: Colors.white,
+            ),
+          ),
+          Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(
+                  text: "${item.product.price}",
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const TextSpan(
+                  text: " د.ع",
+                  style: TextStyle(
+                    color: Color(0xff828791),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
