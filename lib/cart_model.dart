@@ -11,14 +11,53 @@ class GetCart extends _$GetCart {
   Cart build() => const Cart(items: []);
 
   void add(Product product) {
-    state = state.copyWith(
-      items: [
-        ...state.items,
-        CartItem(
-          product: product,
-        ),
-      ],
-    );
+    final index =
+        state.items.indexWhere((element) => element.product == product);
+    if (index == -1) {
+      state = state.copyWith(
+        items: [
+          ...state.items,
+          CartItem(product: product),
+        ],
+      );
+    } else {
+      final items = [...state.items];
+      items[index] = items[index].copyWith(count: items[index].count + 1);
+      state = state.copyWith(items: items);
+    }
+  }
+
+  void remove(Product product) {
+    final index =
+        state.items.indexWhere((element) => element.product == product);
+    if (index == -1) {
+      return;
+    } else {
+      final items = [...state.items];
+      if (items[index].count == 1) {
+        items.removeAt(index);
+      } else {
+        items[index] = items[index].copyWith(count: items[index].count - 1);
+      }
+      state = state.copyWith(items: items);
+    }
+  }
+
+  void delete(CartItem item) {
+    final items = [...state.items];
+    items.remove(item);
+    state = state.copyWith(items: items);
+  }
+
+  void updatePrice(CartItem item, String value) {
+    final items = [...state.items];
+    final index = items.indexWhere((element) => element == item);
+    if (index == -1) {
+      return;
+    } else {
+      items[index] = items[index].copyWith(newPrice: int.tryParse(value));
+      state = state.copyWith(items: items);
+    }
   }
 }
 

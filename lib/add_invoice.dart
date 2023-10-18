@@ -42,9 +42,17 @@ class AddInvoiceScreen extends HookConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('فاتورة بيع: فوائد الودائع الثابتة'),
-        leading: IconButton.filled(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
+        leading: InkResponse(
+          onTap: () => Navigator.pop(context),
+          child: Center(
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Color(0xff8A8791),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.keyboard_arrow_right_rounded),
+            ),
+          ),
         ),
       ),
       body: Padding(
@@ -237,7 +245,14 @@ class CartItemDialog extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final controller = useTextEditingController(text: "0");
+    final item = ref.watch(getCartProvider).items.firstWhere(
+          (element) => element.product == this.item.product,
+          orElse: () => this.item,
+        );
+
+    final controller = useTextEditingController(text: "${item.newPrice ?? 0}");
+
+    final isEditing = useState(false);
 
     return Center(
       child: Material(
@@ -263,69 +278,190 @@ class CartItemDialog extends HookConsumerWidget {
                         children: [
                           Row(
                             children: [
-                              IconButton.filled(
-                                onPressed: () {},
-                                style: IconButton.styleFrom(
-                                  backgroundColor: const Color(0xffD36441),
+                              IconButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                  ref
+                                      .read(getCartProvider.notifier)
+                                      .delete(item);
+                                },
+                                icon: Container(
+                                  padding: const EdgeInsets.all(2.0),
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xff8A8791),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(Icons.delete_outlined),
                                 ),
-                                icon: const Icon(Icons.delete_outlined),
                               ),
                               Hero(
                                 tag: item.product.name,
                                 flightShuttleBuilder: flightShuttleBuilder,
-                                child: Text(item.product.name),
+                                child: Text(
+                                  item.product.name,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ),
                             ],
                           ),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: const Color(0xff254958),
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            padding: const EdgeInsets.all(8.0),
-                            child: RowPadded(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IntrinsicWidth(
-                                  child: TextField(
-                                    controller: controller,
-                                    inputFormatters: [
-                                      FilteringTextInputFormatter.digitsOnly
-                                    ],
-                                    decoration: const InputDecoration.collapsed(
-                                      hintText: "السعر",
-                                      fillColor: Color(0xff1F5E68),
-                                      filled: true,
+                          Visibility(
+                            visible: isEditing.value,
+                            replacement: Container(
+                              decoration: BoxDecoration(
+                                color: const Color(0xff254958),
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              padding: const EdgeInsets.all(8.0),
+                              child: RowPadded(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IntrinsicWidth(
+                                    child: TextField(
+                                      controller: controller,
+                                      onChanged: (value) {
+                                        ref
+                                            .read(getCartProvider.notifier)
+                                            .updatePrice(item, value);
+                                      },
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.digitsOnly
+                                      ],
+                                      decoration:
+                                          const InputDecoration.collapsed(
+                                        hintText: "السعر",
+                                        fillColor: Color(0xff1F5E68),
+                                        filled: true,
+                                      ),
                                     ),
                                   ),
+                                  ValueListenableBuilder(
+                                    valueListenable: controller,
+                                    builder: (context, value, child) {
+                                      return Text.rich(
+                                        TextSpan(
+                                          children: [
+                                            TextSpan(
+                                              text: controller.text
+                                                  .threeDigitFormatter(),
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            const TextSpan(
+                                              text: " د.ع",
+                                              style: TextStyle(
+                                                color: Color(0xff828791),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  )
+                                ],
+                              ),
+                            ),
+                            child: InkWell(
+                              onTap: () {
+                                isEditing.value = false;
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: const Color(0xff503042),
+                                  borderRadius: BorderRadius.circular(8.0),
                                 ),
-                                ValueListenableBuilder(
-                                  valueListenable: controller,
-                                  builder: (context, value, child) {
-                                    return Text.rich(
-                                      TextSpan(
-                                        children: [
-                                          TextSpan(
-                                            text: controller.text
-                                                .threeDigitFormatter(),
-                                            style: const TextStyle(
+                                child: RowPadded(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(8.0),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xffD9263E),
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
+                                      ),
+                                      child: RowPadded(
+                                        gap: 2,
+                                        children: const [
+                                          Text(
+                                            "مخصص",
+                                            style: TextStyle(
                                               fontWeight: FontWeight.bold,
                                             ),
                                           ),
-                                          const TextSpan(
-                                            text: " د.ع",
-                                            style: TextStyle(
-                                              color: Color(0xff828791),
-                                            ),
+                                          Icon(
+                                            Icons.keyboard_arrow_left,
+                                            size: 18,
+                                            color: Colors.white,
                                           ),
                                         ],
                                       ),
-                                    );
-                                  },
-                                )
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: ValueListenableBuilder(
+                                        valueListenable: controller,
+                                        builder: (context, value, child) {
+                                          return Text.rich(
+                                            TextSpan(
+                                              children: [
+                                                TextSpan(
+                                                  text: controller.text
+                                                      .threeDigitFormatter(),
+                                                  style: const TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                const TextSpan(
+                                                  text: " د.ع",
+                                                  style: TextStyle(
+                                                    color: Color(0xff828791),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text.rich(
+                            TextSpan(
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              children: [
+                                const TextSpan(
+                                  text: "المجموع",
+                                  style: TextStyle(color: Color(0xff525361)),
+                                ),
+                                // space
+                                const TextSpan(text: " "),
+                                TextSpan(
+                                  text: item.newPrice == null
+                                      ? "0"
+                                      : "${item.newPrice! * item.count}"
+                                          .threeDigitFormatter(),
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const TextSpan(text: " "),
+                                const TextSpan(
+                                  text: "د.ع",
+                                  style: TextStyle(color: Color(0xff525361)),
+                                ),
                               ],
                             ),
-                          )
+                          ),
                         ],
                       ),
                     ),
@@ -370,9 +506,15 @@ class CartItemDialog extends HookConsumerWidget {
                       child: RowPadded(
                         children: [
                           InkWell(
-                            onTap: () {},
+                            onTap: () {
+                              ref
+                                  .watch(getCartProvider.notifier)
+                                  .add(item.product);
+
+                              isEditing.value = true;
+                            },
                             child: const Icon(
-                              Icons.remove,
+                              Icons.add,
                               size: 18,
                               color: Colors.black,
                             ),
@@ -386,13 +528,19 @@ class CartItemDialog extends HookConsumerWidget {
                             ),
                           ),
                           InkWell(
-                            onTap: () {},
+                            onTap: () {
+                              if (item.count > 1) {
+                                ref
+                                    .watch(getCartProvider.notifier)
+                                    .remove(item.product);
+                              }
+                            },
                             child: const Icon(
-                              Icons.add,
+                              Icons.remove,
                               size: 18,
                               color: Colors.black,
                             ),
-                          )
+                          ),
                         ],
                       ),
                     ),
@@ -428,22 +576,23 @@ class CartItemDialog extends HookConsumerWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 8.0,
-                        vertical: 4.0,
+                        horizontal: 10.0,
+                        vertical: 6.0,
                       ),
                       child: RowPadded(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          const Icon(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          Icon(
                             Icons.inventory,
                             size: 18,
                             color: Color(0xff828791),
                           ),
                           Text(
-                            "${item.count}",
-                            style: const TextStyle(
+                            "0",
+                            style: TextStyle(
+                              fontSize: 10,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xffD36441),
+                              color: Color(0xff828791),
                             ),
                           ),
                         ],
@@ -502,15 +651,15 @@ class CartListTile extends StatelessWidget {
               ),
               child: RowPadded(
                 crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Icon(
+                children: const [
+                  Icon(
                     Icons.inventory,
                     size: 18,
                     color: Color(0xff828791),
                   ),
                   Text(
-                    "${item.count}",
-                    style: const TextStyle(
+                    "1",
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Color(0xffD36441),
                     ),
