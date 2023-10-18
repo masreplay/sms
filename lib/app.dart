@@ -14,10 +14,15 @@ class MainApp extends StatelessWidget {
       themeMode: themeMode,
       theme: theme.buildLightTheme(),
       darkTheme: theme.buildDarkTheme(),
-      home: const Directionality(
-        textDirection: TextDirection.rtl,
-        child: AddInvoiceScreen(),
-      ),
+      home: const AddInvoiceScreen(),
+      builder: (context, child) {
+        if (child == null) return const SizedBox();
+
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: child,
+        );
+      },
     );
   }
 }

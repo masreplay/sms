@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 class DropdownFormField<T> extends StatefulHookWidget {
@@ -58,6 +59,7 @@ class _DropdownFormFieldState<T> extends State<DropdownFormField<T>> {
                           return InkWell(
                             onTap: () {
                               widget.onChanged(item);
+                              focusNode.unfocus();
                               controller.hide();
                               setState(() {});
                             },
@@ -82,7 +84,7 @@ class _DropdownFormFieldState<T> extends State<DropdownFormField<T>> {
                         },
                       ),
                     ),
-                  ),
+                  ).animate().fadeIn(),
                 ),
               );
             },
@@ -149,7 +151,3 @@ class _DropdownFormFieldState<T> extends State<DropdownFormField<T>> {
     );
   }
 }
-
-// extension ValueNotifierX<T> on ValueNotifier<T> {
-//   T update(T value) => this.value = value;
-// }

@@ -45,6 +45,7 @@ dependencies:
 
   # cache
   shared_preferences: ^2.2.1
+  flutter_animate: ^4.2.0+1
 
 dev_dependencies:
   flutter_test:
@@ -61,4 +62,7 @@ dev_dependencies:
 flutter:
   generate: true
   uses-material-design: true
+
+  assets:
+    - assets/illustrations/
 

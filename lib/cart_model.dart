@@ -24,18 +24,34 @@ class GetCart extends _$GetCart {
 
 @freezed
 class Cart with _$Cart {
+  const Cart._();
+
   const factory Cart({
     @Default([]) List<CartItem> items,
   }) = _Cart;
 
   factory Cart.fromJson(Map<String, dynamic> json) => _$CartFromJson(json);
+
+  double getTotalPrice() {
+    double totalPrice = 0;
+
+    for (var item in items) {
+      if (item.newPrice != null) {
+        totalPrice += item.newPrice! * item.count;
+      } else {
+        totalPrice += item.product.price * item.count;
+      }
+    }
+    return totalPrice;
+  }
 }
 
 @freezed
 class CartItem with _$CartItem {
   const factory CartItem({
-    int? newPrice,
     required Product product,
+    @Default(1) int count,
+    int? newPrice,
   }) = _CartItem;
 
   factory CartItem.fromJson(Map<String, dynamic> json) =>
