@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:sms/add_invoice.dart';
 import 'package:sms/snack_bar.dart';
 import 'package:sms/theme.dart';
+
+import 'invoices_screen.dart';
 
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
@@ -16,7 +17,7 @@ class MainApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: theme.buildLightTheme(),
       darkTheme: theme.buildDarkTheme(),
-      home: const AddInvoiceScreen(),
+      home: const InvoicesScreen(),
       builder: (context, child) {
         if (child == null) return const SizedBox();
 

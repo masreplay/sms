@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sms/cart_model.dart';
 import 'package:sms/flex_padded.dart';
+import 'package:sms/formatter.dart';
 import 'package:sms/gen/assets.gen.dart';
 import 'package:sms/hero.dart';
 import 'package:sms/snack_bar.dart';
@@ -42,6 +42,10 @@ class AddInvoiceScreen extends HookConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('فاتورة بيع: فوائد الودائع الثابتة'),
+        leading: IconButton.filled(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(
@@ -537,11 +541,4 @@ class CartListTile extends StatelessWidget {
       ),
     );
   }
-}
-
-extension on String {
-  // 5000
-  // 5,000
-  String threeDigitFormatter() =>
-      NumberFormat.decimalPattern().format(int.tryParse(this) ?? 0);
 }
