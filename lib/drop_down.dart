@@ -30,6 +30,8 @@ class _DropdownFormFieldState<T> extends State<DropdownFormField<T>> {
     final searchController = useTextEditingController();
     final focusNode = useFocusNode();
 
+    final items = useState(widget.items);
+
     return LayoutBuilder(
       builder: (context, constraints) {
         return CompositedTransformTarget(
@@ -50,12 +52,12 @@ class _DropdownFormFieldState<T> extends State<DropdownFormField<T>> {
                       borderRadius: BorderRadius.vertical(bottom: radius),
                     ),
                     width: constraints.maxWidth,
-                    height: 200,
+                    height: 250,
                     child: Scrollbar(
                       child: ListView.builder(
-                        itemCount: widget.items.length,
+                        itemCount: items.value.length,
                         itemBuilder: (context, index) {
-                          final T item = widget.items[index];
+                          final T item = items.value[index];
                           return InkWell(
                             onTap: () {
                               widget.onChanged(item);
@@ -105,8 +107,17 @@ class _DropdownFormFieldState<T> extends State<DropdownFormField<T>> {
                       controller: searchController,
                       focusNode: focusNode,
                       onTap: () {
-                        controller.toggle();
+                        controller.show();
                         setState(() {});
+                      },
+                      onChanged: (value) {
+                        items.value = widget.items.where(
+                          (element) {
+                            return widget
+                                .itemTextBuilder(element)
+                                .contains(searchController.text);
+                          },
+                        ).toList();
                       },
                       decoration: const InputDecoration.collapsed(
                         border: InputBorder.none,

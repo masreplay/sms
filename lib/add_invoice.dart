@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sms/cart_model.dart';
 import 'package:sms/flex_padded.dart';
 import 'package:sms/gen/assets.gen.dart';
 import 'package:sms/hero.dart';
+import 'package:sms/snack_bar.dart';
 
 import 'drop_down.dart';
 import 'product_model.dart';
@@ -40,15 +44,23 @@ class AddInvoiceScreen extends HookConsumerWidget {
         title: const Text('فاتورة بيع: فوائد الودائع الثابتة'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16.0,
+          vertical: 8.0,
+        ),
+        child: ColumnPadded(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          gap: 8,
           children: [
-            DropdownFormField(
-              items: products,
-              itemTextBuilder: (product) => product.name,
-              onChanged: (product) {
-                ref.read(getCartProvider.notifier).add(product);
-              },
+            Container(
+              color: Theme.of(context).colorScheme.background,
+              child: DropdownFormField(
+                items: products,
+                itemTextBuilder: (product) => product.name,
+                onChanged: (product) {
+                  ref.read(getCartProvider.notifier).add(product);
+                },
+              ),
             ),
             Expanded(
               child: Visibility(
@@ -57,7 +69,6 @@ class AddInvoiceScreen extends HookConsumerWidget {
                   child: Assets.illustrations.noItems.image(width: 200),
                 ),
                 child: ListView.separated(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
                   itemCount: cart.items.length,
                   separatorBuilder: (_, __) => const SizedBox(height: 8.0),
                   itemBuilder: (context, index) {
@@ -80,6 +91,7 @@ class AddInvoiceScreen extends HookConsumerWidget {
               ),
             ),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(
                   "المجموع الكلي",
@@ -95,7 +107,7 @@ class AddInvoiceScreen extends HookConsumerWidget {
                         ),
                       ),
                       const TextSpan(
-                        text: " د.ع",
+                        text: " د.ع ",
                         style: TextStyle(
                           color: Color(0xff828791),
                         ),
@@ -104,7 +116,49 @@ class AddInvoiceScreen extends HookConsumerWidget {
                   ),
                 ),
               ],
-            )
+            ),
+            RowPadded(
+              children: [
+                Expanded(
+                  child: OutlinedVerticalButton(
+                    text: "باركود",
+                    icon: Icons.qr_code_scanner_rounded,
+                    onTap: () => showUnimplementedSnackBar(context),
+                    iconColor: const Color(0xffD36441),
+                  ),
+                ),
+                Expanded(
+                  child: OutlinedVerticalButton(
+                    text: "معاينة وارسال",
+                    icon: Icons.file_copy,
+                    onTap: cart.items.isEmpty ? null : () {},
+                    backgroundColor: const Color(0xff21956E),
+                  ),
+                ),
+                Expanded(
+                  child: OutlinedVerticalButton(
+                    text: "حفظ كمسودة",
+                    icon: Icons.save_rounded,
+                    onTap: cart.items.isEmpty
+                        ? null
+                        : () => showUnimplementedSnackBar(context),
+                  ),
+                ),
+              ],
+            ),
+            OutlinedButton.icon(
+              icon: const Icon(
+                Icons.file_copy,
+                color: Color(0xFF8C224E),
+              ),
+              label: const Text(
+                "الغاء الفاتورة",
+                style: TextStyle(color: Colors.white),
+              ),
+              onPressed: cart.items.isEmpty
+                  ? null
+                  : () => showUnimplementedSnackBar(context),
+            ),
           ],
         ),
       ),
@@ -112,15 +166,75 @@ class AddInvoiceScreen extends HookConsumerWidget {
   }
 }
 
-class CartItemDialog extends StatelessWidget {
+class OutlinedVerticalButton extends StatelessWidget {
+  const OutlinedVerticalButton({
+    super.key,
+    required this.text,
+    required this.icon,
+    this.onTap,
+    this.backgroundColor,
+    this.textColor,
+    this.iconColor,
+  });
+
+  final IconData icon;
+  final String text;
+  final VoidCallback? onTap;
+  // style
+  final Color? backgroundColor;
+  final Color? textColor;
+  final Color? iconColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final borderRadius = BorderRadius.circular(12.0);
+
+    final enabled = onTap != null;
+
+    final textColor = this.textColor ?? Theme.of(context).colorScheme.onSurface;
+    final iconColor = this.iconColor ?? Theme.of(context).colorScheme.onSurface;
+
+    return InkWell(
+      borderRadius: borderRadius,
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(8.0),
+        decoration: BoxDecoration(
+          borderRadius: borderRadius,
+          color: enabled ? backgroundColor : backgroundColor?.withOpacity(0.5),
+          border: Border.all(color: const Color(0xff35313F)),
+        ),
+        child: ColumnPadded(
+          children: [
+            Icon(
+              icon,
+              color: enabled ? iconColor : iconColor.withOpacity(0.5),
+            ),
+            Text(
+              text,
+              style: TextStyle(
+                color: enabled ? textColor : textColor.withOpacity(0.5),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class CartItemDialog extends HookConsumerWidget {
   const CartItemDialog({
     super.key,
     required this.item,
   });
 
   final CartItem item;
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final controller = useTextEditingController(text: "0");
+
     return Center(
       child: Material(
         color: Colors.transparent,
@@ -141,12 +255,15 @@ class CartItemDialog extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
                             children: [
                               IconButton.filled(
                                 onPressed: () {},
-                                color: Colors.white,
+                                style: IconButton.styleFrom(
+                                  backgroundColor: const Color(0xffD36441),
+                                ),
                                 icon: const Icon(Icons.delete_outlined),
                               ),
                               Hero(
@@ -156,6 +273,55 @@ class CartItemDialog extends StatelessWidget {
                               ),
                             ],
                           ),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: const Color(0xff254958),
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            padding: const EdgeInsets.all(8.0),
+                            child: RowPadded(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IntrinsicWidth(
+                                  child: TextField(
+                                    controller: controller,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.digitsOnly
+                                    ],
+                                    decoration: const InputDecoration.collapsed(
+                                      hintText: "السعر",
+                                      fillColor: Color(0xff1F5E68),
+                                      filled: true,
+                                    ),
+                                  ),
+                                ),
+                                ValueListenableBuilder(
+                                  valueListenable: controller,
+                                  builder: (context, value, child) {
+                                    return Text.rich(
+                                      TextSpan(
+                                        children: [
+                                          TextSpan(
+                                            text: controller.text
+                                                .threeDigitFormatter(),
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const TextSpan(
+                                            text: " د.ع",
+                                            style: TextStyle(
+                                              color: Color(0xff828791),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                )
+                              ],
+                            ),
+                          )
                         ],
                       ),
                     ),
@@ -186,8 +352,71 @@ class CartItemDialog extends StatelessWidget {
                     bottom: Radius.circular(12.0),
                   ),
                 ),
-                child: Row(
+                child: RowPadded(
                   children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 4,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: RowPadded(
+                        children: [
+                          InkWell(
+                            onTap: () {},
+                            child: const Icon(
+                              Icons.remove,
+                              size: 18,
+                              color: Colors.black,
+                            ),
+                          ),
+                          Text(
+                            item.count.toString(),
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          InkWell(
+                            onTap: () {},
+                            child: const Icon(
+                              Icons.add,
+                              size: 18,
+                              color: Colors.black,
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xff1A1925),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: RowPadded(
+                        children: const [
+                          Text(
+                            "هدية",
+                            style: TextStyle(
+                              color: Color(0xff26A77D),
+                            ),
+                          ),
+                          Icon(
+                            Icons.add_box_rounded,
+                            size: 18,
+                            color: Color(0xff26A77D),
+                          ),
+                        ],
+                      ),
+                    ),
                     const Spacer(),
                     Container(
                       decoration: BoxDecoration(
@@ -243,7 +472,7 @@ class CartListTile extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       borderRadius: borderRadius,
-      child: Ink(
+      child: Container(
         padding: const EdgeInsets.all(12.0),
         decoration: BoxDecoration(
           borderRadius: borderRadius,
@@ -308,4 +537,11 @@ class CartListTile extends StatelessWidget {
       ),
     );
   }
+}
+
+extension on String {
+  // 5000
+  // 5,000
+  String threeDigitFormatter() =>
+      NumberFormat.decimalPattern().format(int.tryParse(this) ?? 0);
 }
