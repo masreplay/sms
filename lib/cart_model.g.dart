@@ -7,6 +7,7 @@ part of 'cart_model.dart';
 // **************************************************************************
 
 _$CartImpl _$$CartImplFromJson(Map<String, dynamic> json) => _$CartImpl(
+      clientName: json['clientName'] as String,
       items: (json['items'] as List<dynamic>?)
               ?.map((e) => CartItem.fromJson(e as Map<String, dynamic>))
               .toList() ??
@@ -15,6 +16,7 @@ _$CartImpl _$$CartImplFromJson(Map<String, dynamic> json) => _$CartImpl(
 
 Map<String, dynamic> _$$CartImplToJson(_$CartImpl instance) =>
     <String, dynamic>{
+      'clientName': instance.clientName,
       'items': instance.items,
     };
 
@@ -36,7 +38,7 @@ Map<String, dynamic> _$$CartItemImplToJson(_$CartItemImpl instance) =>
 // RiverpodGenerator
 // **************************************************************************
 
-String _$getCartHash() => r'16b3e1f3f1a485e545dcdefdad6fed0230ba5964';
+String _$getCartHash() => r'1bfaa8a927c33bd59cad402ac6222ef5c189bbe7';
 
 /// See also [GetCart].
 @ProviderFor(GetCart)

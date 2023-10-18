@@ -20,6 +20,7 @@ Cart _$CartFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$Cart {
+  String get clientName => throw _privateConstructorUsedError;
   List<CartItem> get items => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -32,7 +33,7 @@ abstract class $CartCopyWith<$Res> {
   factory $CartCopyWith(Cart value, $Res Function(Cart) then) =
       _$CartCopyWithImpl<$Res, Cart>;
   @useResult
-  $Res call({List<CartItem> items});
+  $Res call({String clientName, List<CartItem> items});
 }
 
 /// @nodoc
@@ -48,9 +49,14 @@ class _$CartCopyWithImpl<$Res, $Val extends Cart>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? clientName = null,
     Object? items = null,
   }) {
     return _then(_value.copyWith(
+      clientName: null == clientName
+          ? _value.clientName
+          : clientName // ignore: cast_nullable_to_non_nullable
+              as String,
       items: null == items
           ? _value.items
           : items // ignore: cast_nullable_to_non_nullable
@@ -66,7 +72,7 @@ abstract class _$$CartImplCopyWith<$Res> implements $CartCopyWith<$Res> {
       __$$CartImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({List<CartItem> items});
+  $Res call({String clientName, List<CartItem> items});
 }
 
 /// @nodoc
@@ -79,9 +85,14 @@ class __$$CartImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? clientName = null,
     Object? items = null,
   }) {
     return _then(_$CartImpl(
+      clientName: null == clientName
+          ? _value.clientName
+          : clientName // ignore: cast_nullable_to_non_nullable
+              as String,
       items: null == items
           ? _value._items
           : items // ignore: cast_nullable_to_non_nullable
@@ -93,13 +104,16 @@ class __$$CartImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$CartImpl extends _Cart {
-  const _$CartImpl({final List<CartItem> items = const []})
+  const _$CartImpl(
+      {required this.clientName, final List<CartItem> items = const []})
       : _items = items,
         super._();
 
   factory _$CartImpl.fromJson(Map<String, dynamic> json) =>
       _$$CartImplFromJson(json);
 
+  @override
+  final String clientName;
   final List<CartItem> _items;
   @override
   @JsonKey()
@@ -111,7 +125,7 @@ class _$CartImpl extends _Cart {
 
   @override
   String toString() {
-    return 'Cart(items: $items)';
+    return 'Cart(clientName: $clientName, items: $items)';
   }
 
   @override
@@ -119,13 +133,15 @@ class _$CartImpl extends _Cart {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$CartImpl &&
+            (identical(other.clientName, clientName) ||
+                other.clientName == clientName) &&
             const DeepCollectionEquality().equals(other._items, _items));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(_items));
+  int get hashCode => Object.hash(
+      runtimeType, clientName, const DeepCollectionEquality().hash(_items));
 
   @JsonKey(ignore: true)
   @override
@@ -142,11 +158,15 @@ class _$CartImpl extends _Cart {
 }
 
 abstract class _Cart extends Cart {
-  const factory _Cart({final List<CartItem> items}) = _$CartImpl;
+  const factory _Cart(
+      {required final String clientName,
+      final List<CartItem> items}) = _$CartImpl;
   const _Cart._() : super._();
 
   factory _Cart.fromJson(Map<String, dynamic> json) = _$CartImpl.fromJson;
 
+  @override
+  String get clientName;
   @override
   List<CartItem> get items;
   @override

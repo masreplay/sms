@@ -1,8 +1,10 @@
+import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:sms/cart_list_tile.dart';
 import 'package:sms/cart_model.dart';
 import 'package:sms/flex_padded.dart';
 import 'package:sms/formatter.dart';
@@ -41,7 +43,7 @@ class AddInvoiceScreen extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('فاتورة بيع: فوائد الودائع الثابتة'),
+        title: Text('فاتورة بيع: ${cart.clientName}'),
         leading: InkResponse(
           onTap: () => Navigator.pop(context),
           child: Center(
@@ -113,7 +115,7 @@ class AddInvoiceScreen extends HookConsumerWidget {
                   TextSpan(
                     children: [
                       TextSpan(
-                        text: "${cart.getTotalPrice()}",
+                        text: "${cart.getTotalPrice()}".threeDigitFormatter(),
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                         ),
@@ -143,7 +145,18 @@ class AddInvoiceScreen extends HookConsumerWidget {
                   child: OutlinedVerticalButton(
                     text: "معاينة وارسال",
                     icon: Icons.file_copy,
-                    onTap: cart.items.isEmpty ? null : () {},
+                    onTap: cart.items.isEmpty
+                        ? null
+                        : () {
+                            Navigator.push(
+                              context,
+                              HeroDialogRoute(
+                                builder: (context) {
+                                  return const PreviewInvoiceDialog();
+                                },
+                              ),
+                            );
+                          },
                     backgroundColor: const Color(0xff21956E),
                   ),
                 ),
@@ -174,6 +187,220 @@ class AddInvoiceScreen extends HookConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class PreviewInvoiceDialog extends HookConsumerWidget {
+  const PreviewInvoiceDialog({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final Cart cart = ref.watch(getCartProvider);
+
+    final totalController = useTextEditingController(
+      text: "${cart.getTotalPrice()}",
+    );
+
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      alignment: Alignment.center,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              color: Color(0xff232432),
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(24),
+                bottom: Radius.circular(12),
+              ),
+            ),
+            child: ColumnPadded(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Container(
+                  decoration: const BoxDecoration(
+                    color: Color(0xff30313F),
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(24),
+                    ),
+                  ),
+                  alignment: Alignment.center,
+                  child: Row(
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        icon: Container(
+                          padding: const EdgeInsets.all(2.0),
+                          decoration: const BoxDecoration(
+                            color: Color(0xff8A8791),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.close),
+                        ),
+                      ),
+                      const Spacer(),
+                      Container(
+                        width: 150,
+                        height: 18,
+                        decoration: BoxDecoration(
+                          color: const Color(0xff212331),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      const Spacer(),
+                      const SizedBox(
+                        width: 28,
+                      )
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(24.0),
+                  alignment: Alignment.center,
+                  child: Text(
+                    cart.clientName,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xffD7D7E1),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8.0),
+            child: DottedLine(
+              dashColor: Color(0xff5D5D6A),
+              lineThickness: 1,
+              dashGapLength: 20,
+              dashLength: 20,
+            ),
+          ),
+          Container(
+            decoration: const BoxDecoration(
+              color: Color(0xff232432),
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(12),
+                bottom: Radius.circular(12),
+              ),
+            ),
+            padding: const EdgeInsets.all(16.0),
+            child: ColumnPadded(
+              children: [
+                _buildTextEditingFormField(
+                  readOnly: true,
+                  labelText: "مجموع الفاتورة:",
+                  controller: totalController,
+                ),
+                _buildTextEditingFormField(
+                  readOnly: true,
+                  labelText: "خصم:",
+                  controller: totalController,
+                ),
+                _buildTextEditingFormField(
+                  readOnly: true,
+                  labelText: "المجموع بعد الخصم:",
+                  controller: totalController,
+                ),
+                _buildTextEditingFormField(
+                  readOnly: true,
+                  labelText: "الواصل:",
+                  controller: totalController,
+                ),
+                _buildTextEditingFormField(
+                  readOnly: true,
+                  labelText: "الباقي:",
+                  controller: totalController,
+                ),
+              ],
+            ),
+          ),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8.0),
+            child: DottedLine(
+              dashColor: Color(0xff5D5D6A),
+              lineThickness: 1,
+              dashGapLength: 20,
+              dashLength: 20,
+            ),
+          ),
+          Container(
+            decoration: const BoxDecoration(
+              color: Color(0xff232432),
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(12),
+                bottom: Radius.circular(12),
+              ),
+            ),
+            padding: const EdgeInsets.all(16.0),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTextEditingFormField({
+    required String labelText,
+    required bool readOnly,
+    required TextEditingController controller,
+  }) {
+    return RowPadded(
+      gap: 24,
+      children: [
+        Flexible(
+          flex: 1,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              labelText,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Color(0xff727483),
+              ),
+            ),
+          ),
+        ),
+        Flexible(
+          flex: 2,
+          child: TextField(
+            style: TextStyle(
+              color: readOnly ? const Color(0xffF07914) : Colors.white,
+            ),
+            controller: controller,
+            readOnly: readOnly,
+            decoration: InputDecoration(
+              suffixIcon: Container(
+                width: 48,
+                height: 48,
+                alignment: Alignment.center,
+                child: const Text(
+                  "د.ع",
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xff727483),
+                  ),
+                ),
+              ),
+              contentPadding: const EdgeInsets.all(4.0),
+              fillColor: const Color(0xff373846),
+              filled: true,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.0),
+                borderSide: BorderSide.none,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -603,89 +830,6 @@ class CartItemDialog extends HookConsumerWidget {
               )
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class CartListTile extends StatelessWidget {
-  const CartListTile({
-    super.key,
-    required this.item,
-    required this.onTap,
-  });
-
-  final CartItem item;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final borderRadius = BorderRadius.circular(12.0);
-    return InkWell(
-      onTap: onTap,
-      borderRadius: borderRadius,
-      child: Container(
-        padding: const EdgeInsets.all(12.0),
-        decoration: BoxDecoration(
-          borderRadius: borderRadius,
-          color: const Color(0xff303142),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Hero(
-                tag: item.product.name,
-                child: Text(item.product.name),
-              ),
-            ),
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20.0),
-              decoration: BoxDecoration(
-                border: Border.all(color: const Color(0xff828791)),
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              padding: const EdgeInsets.symmetric(
-                horizontal: 8.0,
-                vertical: 4.0,
-              ),
-              child: RowPadded(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: const [
-                  Icon(
-                    Icons.inventory,
-                    size: 18,
-                    color: Color(0xff828791),
-                  ),
-                  Text(
-                    "1",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xffD36441),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Text.rich(
-              TextSpan(
-                children: [
-                  TextSpan(
-                    text: "${item.product.price}",
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const TextSpan(
-                    text: " د.ع",
-                    style: TextStyle(
-                      color: Color(0xff828791),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
         ),
       ),
     );

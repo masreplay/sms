@@ -46,6 +46,7 @@ dependencies:
   # cache
   shared_preferences: ^2.2.1
   flutter_animate: ^4.2.0+1
+  dotted_line: ^3.2.2
 
 dev_dependencies:
   flutter_test:

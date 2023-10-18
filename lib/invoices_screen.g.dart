@@ -26,7 +26,7 @@ Map<String, dynamic> _$$InvoiceImplToJson(_$InvoiceImpl instance) =>
 // RiverpodGenerator
 // **************************************************************************
 
-String _$getInvoicesHash() => r'7386b1d888acd7d5da8f577a94e8db87de0e165c';
+String _$getInvoicesHash() => r'e18d915d645b6c3dfcf8c59e21b42471966c3402';
 
 /// See also [getInvoices].
 @ProviderFor(getInvoices)

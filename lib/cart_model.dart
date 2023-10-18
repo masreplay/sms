@@ -8,7 +8,10 @@ part 'cart_model.g.dart';
 @riverpod
 class GetCart extends _$GetCart {
   @override
-  Cart build() => const Cart(items: []);
+  Cart build() => const Cart(
+        items: [],
+        clientName: 'فوائد الودائع الثابتة',
+      );
 
   void add(Product product) {
     final index =
@@ -66,13 +69,14 @@ class Cart with _$Cart {
   const Cart._();
 
   const factory Cart({
+    required String clientName,
     @Default([]) List<CartItem> items,
   }) = _Cart;
 
   factory Cart.fromJson(Map<String, dynamic> json) => _$CartFromJson(json);
 
-  double getTotalPrice() {
-    double totalPrice = 0;
+  int getTotalPrice() {
+    int totalPrice = 0;
 
     for (var item in items) {
       if (item.newPrice != null) {

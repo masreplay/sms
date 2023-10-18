@@ -216,8 +216,8 @@ class InvoiceGridTile extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         gap: 4,
                         children: [
-                          _iconButtonOutlined(
-                            context,
+                          IconButtonOutlined(
+                            icon: Icons.receipt_long,
                             onTap: () {
                               showUnimplementedSnackBar(context);
                             },
@@ -249,8 +249,8 @@ class InvoiceGridTile extends StatelessWidget {
                         gap: 4,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          _iconButtonOutlined(
-                            context,
+                          IconButtonOutlined(
+                            icon: Icons.receipt_long,
                             onTap: () {
                               showUnimplementedSnackBar(context);
                             },
@@ -324,11 +324,20 @@ class InvoiceGridTile extends StatelessWidget {
       ],
     );
   }
+}
 
-  Widget _iconButtonOutlined(
-    BuildContext context, {
-    VoidCallback? onTap,
-  }) {
+class IconButtonOutlined extends StatelessWidget {
+  final VoidCallback? onTap;
+  final IconData? icon;
+
+  const IconButtonOutlined({
+    super.key,
+    required this.onTap,
+    required this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     final borderRadius = BorderRadius.circular(8);
     return InkWell(
       onTap: onTap,
@@ -343,8 +352,7 @@ class InvoiceGridTile extends StatelessWidget {
           borderRadius: borderRadius,
         ),
         child: Icon(
-          // فاتورة
-          Icons.receipt_long,
+          icon,
           size: 18,
           color: Theme.of(context).colorScheme.outline,
         ),
