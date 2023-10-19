@@ -21,6 +21,11 @@ Cart _$CartFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Cart {
   String get clientName => throw _privateConstructorUsedError;
+  int? get total => throw _privateConstructorUsedError;
+  int? get discount => throw _privateConstructorUsedError;
+  int? get priceAfterDiscount => throw _privateConstructorUsedError;
+  int? get paid => throw _privateConstructorUsedError;
+  int? get remaining => throw _privateConstructorUsedError;
   List<CartItem> get items => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -33,7 +38,14 @@ abstract class $CartCopyWith<$Res> {
   factory $CartCopyWith(Cart value, $Res Function(Cart) then) =
       _$CartCopyWithImpl<$Res, Cart>;
   @useResult
-  $Res call({String clientName, List<CartItem> items});
+  $Res call(
+      {String clientName,
+      int? total,
+      int? discount,
+      int? priceAfterDiscount,
+      int? paid,
+      int? remaining,
+      List<CartItem> items});
 }
 
 /// @nodoc
@@ -50,6 +62,11 @@ class _$CartCopyWithImpl<$Res, $Val extends Cart>
   @override
   $Res call({
     Object? clientName = null,
+    Object? total = freezed,
+    Object? discount = freezed,
+    Object? priceAfterDiscount = freezed,
+    Object? paid = freezed,
+    Object? remaining = freezed,
     Object? items = null,
   }) {
     return _then(_value.copyWith(
@@ -57,6 +74,26 @@ class _$CartCopyWithImpl<$Res, $Val extends Cart>
           ? _value.clientName
           : clientName // ignore: cast_nullable_to_non_nullable
               as String,
+      total: freezed == total
+          ? _value.total
+          : total // ignore: cast_nullable_to_non_nullable
+              as int?,
+      discount: freezed == discount
+          ? _value.discount
+          : discount // ignore: cast_nullable_to_non_nullable
+              as int?,
+      priceAfterDiscount: freezed == priceAfterDiscount
+          ? _value.priceAfterDiscount
+          : priceAfterDiscount // ignore: cast_nullable_to_non_nullable
+              as int?,
+      paid: freezed == paid
+          ? _value.paid
+          : paid // ignore: cast_nullable_to_non_nullable
+              as int?,
+      remaining: freezed == remaining
+          ? _value.remaining
+          : remaining // ignore: cast_nullable_to_non_nullable
+              as int?,
       items: null == items
           ? _value.items
           : items // ignore: cast_nullable_to_non_nullable
@@ -72,7 +109,14 @@ abstract class _$$CartImplCopyWith<$Res> implements $CartCopyWith<$Res> {
       __$$CartImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String clientName, List<CartItem> items});
+  $Res call(
+      {String clientName,
+      int? total,
+      int? discount,
+      int? priceAfterDiscount,
+      int? paid,
+      int? remaining,
+      List<CartItem> items});
 }
 
 /// @nodoc
@@ -86,6 +130,11 @@ class __$$CartImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? clientName = null,
+    Object? total = freezed,
+    Object? discount = freezed,
+    Object? priceAfterDiscount = freezed,
+    Object? paid = freezed,
+    Object? remaining = freezed,
     Object? items = null,
   }) {
     return _then(_$CartImpl(
@@ -93,6 +142,26 @@ class __$$CartImplCopyWithImpl<$Res>
           ? _value.clientName
           : clientName // ignore: cast_nullable_to_non_nullable
               as String,
+      total: freezed == total
+          ? _value.total
+          : total // ignore: cast_nullable_to_non_nullable
+              as int?,
+      discount: freezed == discount
+          ? _value.discount
+          : discount // ignore: cast_nullable_to_non_nullable
+              as int?,
+      priceAfterDiscount: freezed == priceAfterDiscount
+          ? _value.priceAfterDiscount
+          : priceAfterDiscount // ignore: cast_nullable_to_non_nullable
+              as int?,
+      paid: freezed == paid
+          ? _value.paid
+          : paid // ignore: cast_nullable_to_non_nullable
+              as int?,
+      remaining: freezed == remaining
+          ? _value.remaining
+          : remaining // ignore: cast_nullable_to_non_nullable
+              as int?,
       items: null == items
           ? _value._items
           : items // ignore: cast_nullable_to_non_nullable
@@ -105,7 +174,13 @@ class __$$CartImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$CartImpl extends _Cart {
   const _$CartImpl(
-      {required this.clientName, final List<CartItem> items = const []})
+      {required this.clientName,
+      this.total,
+      this.discount,
+      this.priceAfterDiscount,
+      this.paid,
+      this.remaining,
+      final List<CartItem> items = const []})
       : _items = items,
         super._();
 
@@ -114,6 +189,16 @@ class _$CartImpl extends _Cart {
 
   @override
   final String clientName;
+  @override
+  final int? total;
+  @override
+  final int? discount;
+  @override
+  final int? priceAfterDiscount;
+  @override
+  final int? paid;
+  @override
+  final int? remaining;
   final List<CartItem> _items;
   @override
   @JsonKey()
@@ -125,7 +210,7 @@ class _$CartImpl extends _Cart {
 
   @override
   String toString() {
-    return 'Cart(clientName: $clientName, items: $items)';
+    return 'Cart(clientName: $clientName, total: $total, discount: $discount, priceAfterDiscount: $priceAfterDiscount, paid: $paid, remaining: $remaining, items: $items)';
   }
 
   @override
@@ -135,13 +220,28 @@ class _$CartImpl extends _Cart {
             other is _$CartImpl &&
             (identical(other.clientName, clientName) ||
                 other.clientName == clientName) &&
+            (identical(other.total, total) || other.total == total) &&
+            (identical(other.discount, discount) ||
+                other.discount == discount) &&
+            (identical(other.priceAfterDiscount, priceAfterDiscount) ||
+                other.priceAfterDiscount == priceAfterDiscount) &&
+            (identical(other.paid, paid) || other.paid == paid) &&
+            (identical(other.remaining, remaining) ||
+                other.remaining == remaining) &&
             const DeepCollectionEquality().equals(other._items, _items));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
-      runtimeType, clientName, const DeepCollectionEquality().hash(_items));
+      runtimeType,
+      clientName,
+      total,
+      discount,
+      priceAfterDiscount,
+      paid,
+      remaining,
+      const DeepCollectionEquality().hash(_items));
 
   @JsonKey(ignore: true)
   @override
@@ -160,6 +260,11 @@ class _$CartImpl extends _Cart {
 abstract class _Cart extends Cart {
   const factory _Cart(
       {required final String clientName,
+      final int? total,
+      final int? discount,
+      final int? priceAfterDiscount,
+      final int? paid,
+      final int? remaining,
       final List<CartItem> items}) = _$CartImpl;
   const _Cart._() : super._();
 
@@ -167,6 +272,16 @@ abstract class _Cart extends Cart {
 
   @override
   String get clientName;
+  @override
+  int? get total;
+  @override
+  int? get discount;
+  @override
+  int? get priceAfterDiscount;
+  @override
+  int? get paid;
+  @override
+  int? get remaining;
   @override
   List<CartItem> get items;
   @override

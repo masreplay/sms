@@ -9,7 +9,6 @@ part 'cart_model.g.dart';
 class GetCart extends _$GetCart {
   @override
   Cart build() => const Cart(
-        items: [],
         clientName: 'فوائد الودائع الثابتة',
       );
 
@@ -62,6 +61,8 @@ class GetCart extends _$GetCart {
       state = state.copyWith(items: items);
     }
   }
+
+  void update(Cart cart) => state = cart;
 }
 
 @freezed
@@ -70,6 +71,11 @@ class Cart with _$Cart {
 
   const factory Cart({
     required String clientName,
+    int? total,
+    int? discount,
+    int? priceAfterDiscount,
+    int? paid,
+    int? remaining,
     @Default([]) List<CartItem> items,
   }) = _Cart;
 

@@ -3,6 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sms/add_invoice.dart';
+import 'package:sms/cart_model.dart';
 import 'package:sms/date_time.dart';
 import 'package:sms/flex_padded.dart';
 import 'package:sms/formatter.dart';
@@ -26,45 +27,58 @@ class Invoice with _$Invoice {
 }
 
 @riverpod
-List<Invoice> getInvoices(GetInvoicesRef ref) {
-  return [
-    Invoice(
-      id: 99999,
-      createdAt: DateTime(2023, 8, 15, 7, 7),
-      clientName: "مذخر الفرات",
-      totalPrice: 1000,
-    ),
-    Invoice(
-      id: 99999,
-      createdAt: DateTime(2023, 8, 22, 9, 26),
-      clientName: "فوائد الودائع الثابتة",
-      totalPrice: 30000,
-    ),
-    Invoice(
-      id: 99999,
-      createdAt: DateTime(2023, 8, 22, 9, 31),
-      clientName: "فوائد الودائع الثابتة",
-      totalPrice: 4000,
-    ),
-    Invoice(
-      id: 99999,
-      createdAt: DateTime(2023, 8, 22, 9, 32),
-      clientName: "فوائد الودائع الثابتة",
-      totalPrice: 10000,
-    ),
-    Invoice(
-      id: 99999,
-      createdAt: DateTime(2023, 8, 22, 9, 33),
-      clientName: "فوائد الودائع الثابتة",
-      totalPrice: 200,
-    ),
-    Invoice(
-      id: 99999,
-      createdAt: DateTime(2023, 8, 22, 9, 34),
-      clientName: "فوائد الودائع الثابتة",
-      totalPrice: 0,
-    ),
-  ];
+class GetInvoices extends _$GetInvoices {
+  @override
+  List<Invoice> build() {
+    return [
+      Invoice(
+        id: 99999,
+        createdAt: DateTime(2023, 8, 15, 7, 7),
+        clientName: "مذخر الفرات",
+        totalPrice: 1000,
+      ),
+      Invoice(
+        id: 99999,
+        createdAt: DateTime(2023, 8, 22, 9, 26),
+        clientName: "فوائد الودائع الثابتة",
+        totalPrice: 30000,
+      ),
+      Invoice(
+        id: 99999,
+        createdAt: DateTime(2023, 8, 22, 9, 31),
+        clientName: "فوائد الودائع الثابتة",
+        totalPrice: 4000,
+      ),
+      Invoice(
+        id: 99999,
+        createdAt: DateTime(2023, 8, 22, 9, 32),
+        clientName: "فوائد الودائع الثابتة",
+        totalPrice: 10000,
+      ),
+      Invoice(
+        id: 99999,
+        createdAt: DateTime(2023, 8, 22, 9, 33),
+        clientName: "فوائد الودائع الثابتة",
+        totalPrice: 200,
+      ),
+      Invoice(
+        id: 99999,
+        createdAt: DateTime(2023, 8, 22, 9, 34),
+        clientName: "فوائد الودائع الثابتة",
+        totalPrice: 0,
+      ),
+    ];
+  }
+
+  add(Cart cart) => state = [
+        ...state,
+        Invoice(
+          id: 99999,
+          createdAt: DateTime.now(),
+          clientName: cart.clientName,
+          totalPrice: cart.getTotalPrice(),
+        )
+      ];
 }
 
 class InvoicesScreen extends HookConsumerWidget {
@@ -329,11 +343,15 @@ class InvoiceGridTile extends StatelessWidget {
 class IconButtonOutlined extends StatelessWidget {
   final VoidCallback? onTap;
   final IconData? icon;
+  final Color? background;
+  final Color? foreground;
 
   const IconButtonOutlined({
     super.key,
-    required this.onTap,
+    this.onTap,
     required this.icon,
+    this.background,
+    this.foreground,
   });
 
   @override
@@ -345,6 +363,7 @@ class IconButtonOutlined extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(4),
         decoration: BoxDecoration(
+          color: background,
           border: Border.all(
             color: Theme.of(context).colorScheme.outline,
             width: 1,
@@ -354,7 +373,7 @@ class IconButtonOutlined extends StatelessWidget {
         child: Icon(
           icon,
           size: 18,
-          color: Theme.of(context).colorScheme.outline,
+          color: foreground ?? Theme.of(context).colorScheme.outline,
         ),
       ),
     );
