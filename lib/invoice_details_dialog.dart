@@ -312,8 +312,6 @@ class InvoiceItemListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const large = Radius.circular(24);
-    const small = Radius.circular(12);
-    const background = Color(0xff232432);
     const padding = EdgeInsets.all(16.0);
 
     final price = item.newPrice ?? item.product.price;
